@@ -231,3 +231,50 @@ Este procedimiento simula las tareas fundamentales de un Analista SOC Nivel 1 pa
 - Generación de Indicadores de Compromiso (IoC).
 - Identificación de orígenes de ataque para su posterior bloqueo preventivo en firewall corporativo.
 - Creación de reglas de correlación e integración de alertas en sistemas SIEM.
+
+# Módulo 10: Automatización Defensiva, Triaje SOC y Cierre de Fundamentos
+
+## 1. Introducción
+
+Este módulo marca el cierre de la etapa de Fundamentos de Linux, Redes y Análisis de Tráfico (Módulos 1 al 9) y sirve como puente directo hacia la Operación Defensiva Avanzada. Como futuro Analista SOC L1, el objetivo de esta fase es conectar el uso de comandos en terminal con la automatización de procesos y el apoyo de herramientas defensivas para realizar triaje de alertas sin caer en la fatiga por volumen de eventos.
+
+## 2. Síntesis del Aprendizaje (Módulos 1 al 9)
+A lo largo de los módulos anteriores, se consolidaron los pilares técnicos clave para investigar incidentes dentro de un entorno de red:
+
+### Navegación y Administración del Sistema (Módulos 1 - 3)
+Manejo fluido de la terminal de Linux, estructura del sistema de archivos, permisos, variables de entorno y gestión de procesos.
+
+### Análisis de Registros y Auditoría (Módulos 4 - 6)
+Inspección pasiva y activa de archivos de registro como `/var/log/syslog` y `/var/log/auth.log` utilizando herramientas de manipulación de texto (`cat`, `grep`, `awk`, `sed`) para identificar patrones anómalos o intentos fallidos de autenticación.
+
+### Redes e Inspección de Paquetes (Módulos 7 - 9)
+Comprensión de la pila TCP/IP, análisis de tráfico en captura (`.pcap`) mediante **Wireshark** e inspección por línea de comandos con **Tshark** para extraer indicadores de compromiso (IoCs) como direcciones IP origen/destino, puertos y protocolos.
+
+## 3. Flujo de Trabajo del Triaje L1
+El análisis primario de una alerta recopila los datos brutos analizados en los módulos anteriores para aplicar una secuencia lógica de resolución:
+
+1. **Ingreso del Evento:** Recepción de la alerta generada por un colector de logs o sistema de detección.
+
+2. **Parsing y Enriquecimiento:** Extracción automatizada de campos estructurados (IP Origen, IP Destino, Puerto, Protocolo, Hash, Nombre de usuario).
+
+3. **Análisis de Contexto:** Evaluación rápida mediante lógica defensiva o scripts de copiloto para determinar la naturaleza del tráfico.
+
+4. **Dictamen de la Alerta:**
+   * **Verdadero Positivo (VP):** Evento malicioso o no autorizado confirmado. Requiere generación de ticket, aislamiento o respuesta.
+   * **Falso Positivo (FP):** Tráfico legítimo o regla de detección demasiado ruidosa. Requiere documentación y recomendación de ajuste (*tuning*).
+  
+## 4. Matriz de Severidad para Triaje L1
+
+| Nivel de Severidad | Descripción del Evento | Acción Recomendada |
+| :--- | :--- | :--- |
+| **Bajo (Low)** | Escaneos de puertos bloqueados, eventos informativos del sistema | Monitoreo pasivo y registro |
+| **Medio (Medium)** | Múltiples intentos fallidos de login (SSH/HTTP), tráfico inusual en puertos no estándar | Inspección de logs en `/var/log/` y correlación de IP origen |
+| **Alto (High)** | Conexión saliente a IP identificada como C2, ejecución de comandos sospechosos | Triaje prioritario, extracción de `.pcap` y contención |
+| **Crítico (Critical)** | Confirmación de movimiento lateral, exfiltración de datos o acceso root no autorizado | Escalado inmediato a L2 / Equipo de Respuesta a Incidentes (IR) |
+
+## 5. Transición a la Fase Operativa
+Con la base teórica y técnica de Linux/Redes completamente documentada en este repositorio, la práctica defensiva pasa a ejecutarse sobre la suite especializada de **Kali Purple**.
+
+Próximo Paso: Repositorio Operativo
+
+Avanzar a la fase de laboratorios prácticos, herramientas defensivas nativas y análisis en Kali Purple:
