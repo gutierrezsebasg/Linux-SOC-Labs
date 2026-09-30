@@ -277,4 +277,4 @@ Con la base teórica y técnica de Linux/Redes completamente documentada en este
 
 Próximo Paso: Repositorio Operativo
 
-Avanzar a la fase de laboratorios prácticos, herramientas defensivas nativas y análisis en Kali Purple:
+Avanzar a la fase de laboratorios prácticos, herramientas defensivas nativas y análisis en Kali Purple: https://github.com/gutierrezsebasg/Kali-Purple-SOC-Ops
