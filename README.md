@@ -1,280 +1,251 @@
-# Portafolio de Laboratorios de Ciberseguridad & Operaciones SOC (Blue Team)
+# Linux-SOC-Labs - Portafolio SOC L1 (Blue Team)
 
-Este repositorio reúne mis laboratorios prácticos orientados al rol de **SOC Analyst (Level 1 / Blue Team)**. Documenta el desarrollo de scripts en Bash para automatización, la gestión y análisis de logs del sistema Linux, y la captura e inspección de tráfico de red en un entorno de pruebas controlado.
+Este repositorio reúne mis laboratorios prácticos orientados al rol de **SOC Analyst L1 / Blue Team**. Documenta automatización con Bash, análisis de logs en Linux y captura e inspección de tráfico de red en laboratorio controlado.
 
-1 - Entorno de Trabajo y Herramientas
+**Entorno:** Kali Linux en VirtualBox | **Lenguaje:** Bash
 
-Sistema Operativo: Kali Linux (Entorno virtualizado con VirtualBox).
+---
 
-Lenguaje: Bash Shell Scripting
+## Módulo 1 y 2: Fundamentos de Terminal y Archivos
 
-2 - Comandos Practicados y Funcionalidad
+### 1. Entorno de Trabajo y Herramientas
+- **Sistema Operativo:** Kali Linux (VirtualBox)
+- **Lenguaje:** Bash Shell Scripting
 
-2.1 - Ubicación y Navegación
+### 2. Comandos Practicados
 
-`pwd`: Identificación de la ruta del directorio de trabajo actual.
+**2.1 Ubicación y Navegación**
+- `pwd`: Ruta del directorio actual
+- `ls / ls -la`: Listado incluyendo ocultos y permisos
+- `cd`: Navegación entre carpetas
 
-`ls` / `ls -la`: Listado de archivos y directorios, incluyendo archivos ocultos y detalles de permisos.
+**2.2 Inspección de Archivos y Eventos**
+- `cat`: Visualización de archivos en terminal
+- `ssh`: Generación de intentos de conexión local para pruebas
 
-`cd`: Desplazamiento entre diferentes carpetas del sistema.
+**2.3 Aplicación SOC**
+- Explorar estructura de archivos en sistema comprometido
+- Identificar `Failed password` y conexiones sospechosas
+- Base para investigación de fuerza bruta
 
-2.2 - Inspección de Archivos y Eventos de Seguridad
+## Módulo 3: Monitoreo de SSH, Gestión de Servicios y Puertos
 
-`cat`: Visualización del contenido completo de archivos de texto directamente en la terminal.
+### Descripción General
+Inspección de puertos abiertos, análisis de conexiones activas y supervisión en tiempo real del servicio SSH. Incluye automatización con `monitor_ssh.sh`.
 
-`ssh`: Generación de intentos de conexión hacia el entorno local.
+### Comandos y Herramientas Utilizadas (evidencia real de la imagen)
+```bash
+ss -tulanp                          # Verifica puertos en escucha, confirma 22/tcp para sshd
+ssh hacker_falso@127.0.0.1           # Generación de intentos fallidos (lo que provoca pam_unix: check pass; user unknown)
+sudo journalctl -u ssh -f           # Monitoreo en vivo del servicio SSH
+sudo journalctl -u ssh -n 15        # Lectura de las últimas 15 líneas - comando usado en la captura
+chmod 600 ~/.ssh/id_rsa             # Asignación de permisos estrictos para llave privada
+```
 
-3 - Aplicación en el Rol de Analista SOC
-
-El dominio de la terminal y de estos comandos básicos es indispensable en ciberseguridad para:
-
-Explorar la estructura de archivos en un sistema bajo análisis.
-
-Identificar fallos de autenticación (Failed password) y conexiones sospechosas en tiempo real.
-
-Sentar las bases para la investigación de incidentes y respuesta ante ataques de fuerza bruta.
-
-# Modulo 3: Monitoreo de SSH, Gestion de Servicios y Puertos de Red
-
-## Descripcion General
-En este modulo se abordan las herramientas necesarias para la inspeccion de puertos abiertos, analisis de conexiones activas en el sistema y la supervision en tiempo real del servicio SSH. Ademas, se incluye la automatizacion mediante el script monitor_ssh.sh para la deteccion de intentos de acceso.
-
-## Comandos y Herramientas Utilizadas
-- **ss -tulanp**: Inspeccion de todos los puertos TCP/UDP en escucha y procesos vinculados.
-- **journalctl -u ssh -f**: Monitoreo de logs del servicio SSH gestionados por systemd en tiempo real.
-- **chmod 600 id_rsa**: Asignacion de permisos estrictos para llaves privadas de autenticacion SSH.
-
-## Evidencia de Analisis (Imagen)
-La siguiente imagen (log.ssh.jpeg) muestra la captura de pantalla de la consola ejecutando el monitoreo activo de logs durante un evento de conexion, identificando los intentos de inicio de sesion registrados por el sistema:
-
+### Evidencia de Análisis
 ![Captura de Logs SSH](./log.ssh.jpeg)
+*Captura con `journalctl -u ssh -n 15` tras 3 intentos con usuario `hacker_falso`. Se observan los fallos `Invalid user`, `pam_unix(sshd:auth): check pass; user unknown` y `authentication failure`, confirmando detección de fuerza bruta.*
 
 ## Módulo 4: Captura y Análisis de Tráfico de Red (`captura_red.sh`)
 
-### Objetivo:
-Aprender a capturar tráfico de red en vivo desde la terminal de Linux, exportar paquetes a formatos estándar de la industria (`.pcap`) e inspeccionar protocolos y capas OSI para análisis de eventos de seguridad en un SOC.
+### Objetivo
+Capturar tráfico en vivo, exportar a `.pcap` e inspeccionar protocolos y capas OSI para análisis SOC.
 
-### Herramientas Utilizadas:
-- **tcpdump**: Herramienta CLI para captura de tráfico en tiempo real.
-- **Wireshark**: Analizador de protocolos de red para inspección profunda de datos.
+### Herramientas
+- **tcpdump**: Captura CLI en tiempo real
+- **Wireshark**: Inspección profunda
 
-### Procedimiento:
-1. Identificación de la interfaz principal de red (`eth0`) y la dirección IP mediante `ip a`.
-2. Captura de tráfico en vivo y filtrado inicial desde la terminal.
-3. Exportación de paquetes a un archivo de evidencia (`red_laboratorio.pcap`).
-4. Inspección de capas OSI (Capa 3 IP, Capa 4 Transporte/Control) y filtrado por protocolo (`icmp`, `dns`) en Wireshark.
-5. Creación del script `captura_red.sh` para automatizar la captura de muestras de datos en la red.
-![Evidencia Wireshark](captura_modulo4.jpeg)
+### Procedimiento
+```bash
+ip a                                              # Identifica interfaz eth0 e IP (10.0.2.15)
+sudo tcpdump -i eth0 -c 20 -w red_laboratorio.pcap   # Captura solo 20 paquetes - como se ve en la imagen
+```
+1. Identificación de interfaz `eth0` con `ip a`
+2. Captura en vivo de 20 paquetes
+3. Exportación a `red_laboratorio.pcap`
+4. Inspección OSI (L3 IP, L4 TCP/UDP) y filtros `icmp`, `dns`
+5. Automatización con script `captura_red.sh`
 
-# Modulo 5: SIEM (Splunk), Analisis de Logs y Triaje de Incidentes
+![Evidencia Wireshark](./captura_modulo4.jpeg)
+*Captura de 20 paquetes con tcpdump y análisis posterior en Wireshark*
 
-## Objetivo
-Aprender la metodologia de investigacion de eventos de seguridad aplicando filtros en la terminal de Linux y consultas en entornos SIEM (Splunk) para realizar triaje de incidentes y acciones de contencion iniciales.
+## Módulo 5: SIEM (Splunk), Análisis de Logs y Triaje
 
-## Consultas y Busquedas Integradas
+### Objetivo
+Investigación de eventos con filtros en Linux y consultas SPL en Splunk para triaje y contención inicial.
 
-### En Terminal de Linux (Procesamiento de Logs)
-- Top IPs con intentos de acceso:
-  `cat access.log | awk '{print $1}' | sort | uniq -c | sort -nr | head -n 10`
-- Verificacion de inicio de sesion exitoso:
- ` grep "10.0.0.55" /var/log/auth.log | grep -i "Accepted"`
+### Consultas Integradas
 
-### En Splunk (Sintaxis SPL)
-- Ataques de fuerza bruta: `index=main sourcetype=syslog "Failed password" | stats count by src_ip | sort - count`
-- Confirmacion de compromiso: `index=main src_ip="10.0.0.55" "Accepted password"`
+**Linux (Procesamiento de Logs)**
+```bash
+# Top IPs con intentos de acceso
+cat access.log | awk '{print $1}' | sort | uniq -c | sort -nr | head -n 10
 
-## Playbook de Contencion Aplicado
-1. Bloqueo en Firewall: `sudo iptables -A INPUT -s IP_ATACANTE -j DROP`
-2. Aislamiento de red: `sudo ip link set dev eth0 down`
-3. Congelamiento de cuenta comprometida: `sudo passwd -l usuario`
-4. Terminacion de sesiones activas: `sudo pkill -u usuario`
+# Login exitoso de IP sospechosa
+grep "10.0.0.55" /var/log/auth.log | grep -i "Accepted"
+```
 
-# Modulo 6: Inspeccion de Trafico de Red con tcpdump y Wireshark
+**Splunk (SPL)**
+```spl
+index=main sourcetype=syslog "Failed password" | stats count by src_ip | sort -count
+index=main src_ip="10.0.0.55" "Accepted password"
+```
 
-## Objetivo
-Capturar y analizar paquetes de red en archivos .pcap para identificar trafico no cifrado, inspeccion de protocolos y deteccion de exfiltracion de credenciales.
+### Playbook de Contención
+```bash
+sudo iptables -A INPUT -s IP_ATACANTE -j DROP  # Bloqueo firewall
+sudo ip link set dev eth0 down                 # Aislamiento de red
+sudo passwd -l usuario                         # Congelar cuenta
+sudo pkill -u usuario                          # Terminar sesiones
+```
 
-## Captura en Consola (tcpdump)
-- Capturar trafico de una interfaz a archivo:
-  `sudo tcpdump -i eth0 -w captura.pcap`
-- Inspeccionar archivo .pcap en terminal:
-  `sudo tcpdump -r captura.pcap`
+## Módulo 6: Inspección de Tráfico con tcpdump y Wireshark
 
-## Filtros Clave para Wireshark (GUI)
-- Trafico completo de una IP: `ip.addr == 192.168.1.105`
-- Inspeccion de peticiones HTTP (Texto plano): `http`
-- Busqueda de credenciales/formularios: `http.request.method == "POST"`
-- Consultas de nombres de dominio: `dns`
+### Objetivo
+Analizar `.pcap` para detectar tráfico no cifrado y posible exfiltración de credenciales.
 
-## Conclusion del Analisis
-Mediante la inspeccion de tramas HTTP (Puerto 80), es posible extraer campos en texto claro como parametros de usuarios y contraseñas enviadas en formularios web no seguros, resaltando la necesidad del uso obligatorio de TLS/HTTPS (Puerto 443).
+### Captura en Consola
+```bash
+sudo tcpdump -i eth0 -w captura.pcap   # Captura tráfico de eth0 y guarda evidencia en .pcap
+sudo tcpdump -r captura.pcap           # Lee e inspecciona el .pcap en terminal sin Wireshark
+```
 
-# Módulo 7: Análisis de Malware e Indicadores de Compromiso (IoCs)
+### Filtros Clave Wireshark
+```bash
+ip.addr == 192.168.1.105               # Tráfico completo de IP sospechosa (origen/destino)
+http                                   # Peticiones HTTP en texto plano (puerto 80)
+http.request.method == "POST"          # Busca envíos de formularios / credenciales
+dns                                    # Consultas de nombres de dominio
+```
 
-## Descripción General
-Documentación técnica sobre la clasificación de software malicioso y los procedimientos operativos estándar en un Centro de Operaciones de Seguridad (SOC) para la identificación, extracción de evidencias y contención de amenazas.
+**Conclusión:** Tráfico HTTP en puerto 80 expone usuario/contraseña en texto plano. Refuerza necesidad de TLS/HTTPS (443).
 
----
+## Módulo 7: Análisis de Malware e IoCs
 
-## 1. Clasificación de Amenazas (Malware)
-* **Ransomware:** Cifrado no autorizado de datos con fines de extorsión.
-* **InfoStealer / Spyware:** Exfiltración de credenciales, tokens de sesión y datos sensibles.
-* **Trojan (Troyano):** Enmascaramiento de código malicioso dentro de ejecutables aparentes de uso legítimo.
-* **Worm (Gusano):** Propagación autónoma en red aprovechando vulnerabilidades.
-* **Rootkit:** Ocultamiento a nivel de kernel para evasión de soluciones de seguridad (AV/EDR).
+### Descripción General
+Clasificación de malware y procedimiento SOC para identificación y extracción de evidencias.
 
----
+### 1. Clasificación de Amenazas
+- **Ransomware:** Cifrado con fines de extorsión
+- **InfoStealer / Spyware:** Robo de credenciales y tokens
+- **Trojan:** Código malicioso en ejecutable legítimo aparente
+- **Worm:** Propagación autónoma por red
+- **Rootkit:** Ocultamiento a nivel kernel para evadir AV/EDR
 
-## 2. Indicadores de Compromiso (IoCs)
-Evidencias digitales clave para la confirmación e investigación de un incidente:
-
+### 2. Indicadores de Compromiso (IoCs)
 | Tipo de IoC | Ejemplo / Formato | Uso en el SOC |
 | :--- | :--- | :--- |
-| **Identificación de Archivo** | SHA-256, MD5 | Identificación exacta del binario en VirusTotal / EDR. |
-| **Red (C2)** | Direcciones IP, Dominios, URLs | Bloqueo perimetral en Firewall, Proxy y DNS Sinkhole. |
-| **Host** | Rutas temporales (%APPDATA%), Claves de Registro (Run) | Aislamiento, limpieza y reglas de detección local. |
+| **Archivo** | SHA-256, MD5 | Identificación en VirusTotal / EDR |
+| **Red (C2)** | IP, Dominio, URL | Bloqueo en Firewall, Proxy, DNS Sinkhole |
+| **Host** | %APPDATA%, Clave Run | Aislamiento y reglas de detección |
 
----
+### 3. Flujo Operativo de Triaje
+```bash
+# Extracción de hash
+Get-FileHash -Algorithm SHA256 .\archivo.exe   # PowerShell
+sha256sum archivo.exe                           # Linux
+```
+1. Extracción de hash
+2. Análisis estático en VirusTotal
+3. Análisis dinámico en sandbox (ANY.RUN, Hybrid Analysis)
+4. Contención y bloqueo en EDR
 
-## 3. Flujo Operativo de Triaje en el SOC
-
-1. **Extracción de Hash:**
-   * PowerShell: `Get-FileHash -Algorithm SHA256 .\archivo.exe`
-   * Linux: `sha256sum archivo.exe`
-2. **Análisis Estático:** Consulta de reputación mediante firmas en VirusTotal.
-3. **Análisis Dinámico (Sandbox):** Observación del comportamiento en entornos aislados (ANY.RUN, Hybrid Analysis).
-4. **Contención:** Aislamiento lógico de la estación de trabajo mediante el EDR y actualización de listas de bloqueo.
-
----
-
-## Estado del Módulo
+**Estado**
 - [x] Conceptos de Malware e IoCs
 - [x] Flujo de Triaje y Análisis
 - [x] Casos de Práctica y Extracción de IoCs
 
-# Módulo 8: Análisis de Phishing e Investigación de Cabeceras (Headers)
+## Módulo 8: Análisis de Phishing e Investigación de Headers
 
-## Descripción General
-Documentación técnica sobre el procedimiento operativo estándar en un Centro de Operaciones de Seguridad (SOC) para el análisis de correos electrónicos sospechosos, verificación de autenticación de dominios y contención de campañas de Phishing.
+### 1. Capas de Inspección
+- **Cabecera:** Metadatos y enrutamiento, valida IP origen y autenticación
+- **Cuerpo y URLs:** Ingeniería social y credential harvesting
+- **Adjuntos:** Payloads maliciosos (exe, macro, zip)
 
----
-
-## 1. Capas de Inspección en el Análisis de Correo
-
-* **Cabecera (Email Header):** Metadatos e información de enrutamiento que permiten validar la IP de origen y los registros de autenticación del emisor.
-* **Cuerpo y URLs:** Evaluación de técnicas de ingeniería social y extracción de enlaces orientados al robo de credenciales (Credential Harvesting).
-* **Archivos Adjuntos:** Identificación de payloads maliciosos (ej: ejecutables, documentos con macros, archivos comprimidos).
-
----
-
-## 2. Validación de Autenticación de Dominio
-
-Mecanismos clave para detectar suplantación de identidad (Email Spoofing) en la cabecera del mensaje:
-
-| Mecanismo | Función Principal | Criterio de Verificación |
+### 2. Validación de Autenticación
+| Mecanismo | Función | Criterio de Verificación |
 | :--- | :--- | :--- |
-| **SPF (Sender Policy Framework)** | Lista de IPs autorizadas para enviar correos en nombre de un dominio. | FAIL indica que la IP emisor no está autorizada por el dominio. |
-| **DKIM (DomainKeys Identified Mail)** | Firma criptográfica que garantiza la integridad del contenido del mensaje. | FAIL indica alteración del mensaje en tránsito o firma inválida. |
-| **DMARC** | Política del dominio para la gestión de mensajes que fallan SPF o DKIM. | Determina si el correo se rechaza (reject) o se entrega. |
+| **SPF** | IPs autorizadas para enviar por dominio | FAIL = IP no autorizada |
+| **DKIM** | Firma criptográfica de integridad | FAIL = mensaje alterado |
+| **DMARC** | Política para fallos SPF/DKIM | reject / quarantine / none |
 
----
+### 3. Flujo Operativo
+1. Recepción de ticket (.eml/.msg)
+2. Análisis de headers (Google Toolbox, MXToolbox)
+3. Inspección segura de URLs (URLScan.io, VirusTotal)
+4. Hash de adjuntos (SHA-256) y reputación
 
-## 3. Flujo Operativo de Triaje en el SOC
+### 4. Contención (Verdadero Positivo)
+- Bloqueo perimetral de dominio, IP y URLs
+- Purga de buzones en M365
+- Notificación y cierre de ticket
 
-1. **Recepción del Ticket:** Extracción del archivo del correo (.eml / .msg) adjunto en la plataforma de tickets.
-2. **Análisis de Cabecera:** Extracción de headers y procesamiento en herramientas de análisis (ej: Google Admin Toolbox Header Analyzer, MXToolbox).
-3. **Inspección Segura de URLs:** Evaluación de enlaces sospechosos mediante entornos sandbox web aislados (URLScan.io, VirusTotal) sin ejecución directa.
-4. **Verificación de Adjuntos:** Extracción de hashes (SHA-256) de archivos adjuntos para consulta de reputación.
-
----
-
-## 4. Medidas de Contención
-
-En caso de confirmar un **Verdadero Positivo (TP)** de Phishing:
-* **Bloqueo Perimetral:** Incorporación del dominio, IP de origen y URLs a las listas de bloqueo del Firewall/Proxy.
-* **Purga de Buzones:** Búsqueda y eliminación remota del correo en todos los buzones de la organización (M365 / SIEM).
-* **Notificación:** Cierre del ticket informando al usuario la neutralización de la amenaza.
-
----
-
-## Conclusión y Aprendizaje
-Comprensión del flujo de análisis de correo electrónico y de los mecanismos de autenticación SPF, DKIM y DMARC. La correcta interpretación de las cabeceras de correo y el uso de entornos sandbox permiten identificar intentos de suplantación de identidad y contener campañas de phishing antes de que afecten la infraestructura de la organización.
-
----
-
-## Estado del Módulo
+**Estado**
 - [x] Conceptos de Phishing e Ingeniería Social
 - [x] Análisis de Cabeceras (SPF / DKIM / DMARC)
-- [x] Inspección de URLs e IoCs en Sandbox (URLScan.io)
-- [x] Playbook de Contención y Respuesta en el SOC
+- [x] Inspección de URLs e IoCs en Sandbox
+- [x] Playbook de Contención y Respuesta
 
-# Módulo 9: Análisis de Registros de Auditoría y Detección de Fuerza Bruta SSH
+## Módulo 9: Auditoría y Detección de Fuerza Bruta SSH
 
-## Descripción del Proyecto
-Este laboratorio práctico forma parte del Módulo 9 del plan de estudio para Analista SOC Nivel 1. Está enfocado en el análisis de registros del sistema (`/var/log/auth.log`) para la detección de tráfico anómalo e intentos de autenticación fallida vía protocolo SSH, con el objetivo de aislar indicadores de compromiso (IoC) e identificar direcciones IP sospechosas asociadas a patrones de ataque por fuerza bruta en entornos Linux.
+### Descripción
+Análisis de `~/analisis_ataque.log` (simulación de `/var/log/auth.log`) para detectar fuerza bruta SSH, aislar IoCs e IPs sospechosas.
 
-## Metodología y Procesamiento
-El análisis se ejecutó en un entorno Kali Linux aplicando filtrado y procesamiento de datos mediante la línea de comandos (Bash):
+### Metodología
+```bash
+cat ~/analisis_ataque.log                                      # Visualiza log con intentos Failed password
+grep "Failed password" ~/analisis_ataque.log | awk '{print $11}' | sort | uniq -c | sort -nr   # Extrae IP origen (campo $11), agrupa y rankea por frecuencia
+```
 
-1. **Filtrado de eventos:** Identificación de intentos fallidos de autenticación en los registros del sistema.
-2. **Aislamiento de variables:** Extracción de las direcciones IP de origen asociadas a los eventos de fallo.
-3. **Consolidación de datos:** Agrupación, conteo y jerarquización de las direcciones IP según su frecuencia de aparición para identificar la fuente del tráfico malicioso.
+1. **Filtrado:** Identificar `Failed password`
+2. **Aislamiento:** Extraer IP origen con `awk '{print $11}'` 
+3. **Consolidación:** Agrupar, contar y rankear IPs con `sort | uniq -c | sort -nr`
 
-## Resultado de la Investigación
-A través del procesamiento del registro, se logró identificar una dirección IP específica con un volumen elevado de intentos fallidos en un intervalo reducido de tiempo, evidenciando un patrón de ataque por fuerza bruta.
+### Resultado
+Identificación de IP `192.168.1.105` con 3 intentos en intervalo corto, patrón de fuerza bruta confirmado. En entorno real sería `/var/log/auth.log` con `$(NF-3)`.
 
-### Evidencia de Ejecución
-![Evidencia del Análisis](evidencia.jpeg)
+### Evidencia
+![Evidencia del Análisis](./evidencia.jpeg)
+*Procesamiento de `analisis_ataque.log` - Top IPs atacantes: 192.168.1.105 (3) y 10.0.0.50 (1)*
 
-## Aplicación en Entornos SOC
-Este procedimiento simula las tareas fundamentales de un Analista SOC Nivel 1 para:
-- Generación de Indicadores de Compromiso (IoC).
-- Identificación de orígenes de ataque para su posterior bloqueo preventivo en firewall corporativo.
-- Creación de reglas de correlación e integración de alertas en sistemas SIEM.
+### Aplicación SOC L1
+- Generación de IoCs
+- Bloqueo preventivo en firewall
+- Creación de reglas de correlación para SIEM
 
-# Módulo 10: Automatización Defensiva, Triaje SOC y Cierre de Fundamentos
+## Módulo 10: Automatización Defensiva, Triaje y Cierre de Fundamentos
 
-## 1. Introducción
+### 1. Introducción
+Cierre de fundamentos Linux, Redes y Análisis de Tráfico (Módulos 1-9). Puente hacia operación defensiva avanzada.
 
-Este módulo marca el cierre de la etapa de Fundamentos de Linux, Redes y Análisis de Tráfico (Módulos 1 al 9) y sirve como puente directo hacia la Operación Defensiva Avanzada. Como futuro Analista SOC L1, el objetivo de esta fase es conectar el uso de comandos en terminal con la automatización de procesos y el apoyo de herramientas defensivas para realizar triaje de alertas sin caer en la fatiga por volumen de eventos.
+### 2. Síntesis del Aprendizaje
 
-## 2. Síntesis del Aprendizaje (Módulos 1 al 9)
-A lo largo de los módulos anteriores, se consolidaron los pilares técnicos clave para investigar incidentes dentro de un entorno de red:
+**Navegación y Administración (Módulos 1-3)**
+Terminal Linux, sistema de archivos, permisos y procesos.
 
-### Navegación y Administración del Sistema (Módulos 1 - 3)
-Manejo fluido de la terminal de Linux, estructura del sistema de archivos, permisos, variables de entorno y gestión de procesos.
+**Análisis de Registros (Módulos 4-6)**
+Inspección de `/var/log/syslog`, `/var/log/auth.log` con `cat`, `grep`, `awk`, `sed`.
 
-### Análisis de Registros y Auditoría (Módulos 4 - 6)
-Inspección pasiva y activa de archivos de registro como `/var/log/syslog` y `/var/log/auth.log` utilizando herramientas de manipulación de texto (`cat`, `grep`, `awk`, `sed`) para identificar patrones anómalos o intentos fallidos de autenticación.
+**Redes e Inspección (Módulos 7-9)**
+TCP/IP, análisis `.pcap` con Wireshark y Tshark para IoCs.
 
-### Redes e Inspección de Paquetes (Módulos 7 - 9)
-Comprensión de la pila TCP/IP, análisis de tráfico en captura (`.pcap`) mediante **Wireshark** e inspección por línea de comandos con **Tshark** para extraer indicadores de compromiso (IoCs) como direcciones IP origen/destino, puertos y protocolos.
+### 3. Flujo de Triaje L1
+1. **Ingreso:** Alerta de colector de logs / IDS
+2. **Parsing y Enriquecimiento:** IP origen/destino, puerto, hash, usuario
+3. **Análisis de Contexto:** Validación rápida
+4. **Dictamen:**
+   - **Verdadero Positivo (VP):** Malicioso confirmado
+   - **Falso Positivo (FP):** Legítimo, documentar y tunear regla
 
-## 3. Flujo de Trabajo del Triaje L1
-El análisis primario de una alerta recopila los datos brutos analizados en los módulos anteriores para aplicar una secuencia lógica de resolución:
-
-1. **Ingreso del Evento:** Recepción de la alerta generada por un colector de logs o sistema de detección.
-
-2. **Parsing y Enriquecimiento:** Extracción automatizada de campos estructurados (IP Origen, IP Destino, Puerto, Protocolo, Hash, Nombre de usuario).
-
-3. **Análisis de Contexto:** Evaluación rápida mediante lógica defensiva o scripts de copiloto para determinar la naturaleza del tráfico.
-
-4. **Dictamen de la Alerta:**
-   * **Verdadero Positivo (VP):** Evento malicioso o no autorizado confirmado. Requiere generación de ticket, aislamiento o respuesta.
-   * **Falso Positivo (FP):** Tráfico legítimo o regla de detección demasiado ruidosa. Requiere documentación y recomendación de ajuste (*tuning*).
-  
-## 4. Matriz de Severidad para Triaje L1
-
-| Nivel de Severidad | Descripción del Evento | Acción Recomendada |
+### 4. Matriz de Severidad
+| Nivel | Descripción | Acción Recomendada |
 | :--- | :--- | :--- |
-| **Bajo (Low)** | Escaneos de puertos bloqueados, eventos informativos del sistema | Monitoreo pasivo y registro |
-| **Medio (Medium)** | Múltiples intentos fallidos de login (SSH/HTTP), tráfico inusual en puertos no estándar | Inspección de logs en `/var/log/` y correlación de IP origen |
-| **Alto (High)** | Conexión saliente a IP identificada como C2, ejecución de comandos sospechosos | Triaje prioritario, extracción de `.pcap` y contención |
-| **Crítico (Critical)** | Confirmación de movimiento lateral, exfiltración de datos o acceso root no autorizado | Escalado inmediato a L2 / Equipo de Respuesta a Incidentes (IR) |
+| **Bajo (Low)** | Escaneos bloqueados, eventos informativos | Monitoreo pasivo |
+| **Medio (Medium)** | Múltiples login fallidos, tráfico en puertos raros | Revisar /var/log/ y correlacionar IP |
+| **Alto (High)** | Conexión a IP C2, comandos sospechosos | Triaje prioritario, extraer .pcap y contener |
+| **Crítico (Critical)** | Movimiento lateral, exfiltración, root no autorizado | Escalar a L2 / IR inmediato |
 
-## 5. Transición a la Fase Operativa
-Con la base teórica y técnica de Linux/Redes completamente documentada en este repositorio, la práctica defensiva pasa a ejecutarse sobre la suite especializada de **Kali Purple**.
+### 5. Transición a Fase Operativa
+Base Linux/Redes documentada. Siguiente fase en suite especializada **Kali Purple**.
 
-Próximo Paso: Repositorio Operativo
-
-Avanzar a la fase de laboratorios prácticos, herramientas defensivas nativas y análisis en Kali Purple: https://github.com/gutierrezsebasg/Kali-Purple-SOC-Ops
+**Repositorio Operativo:** https://github.com/gutierrezsebasg/Kali-Purple-SOC-Ops
