@@ -2,7 +2,7 @@
 
 Este repositorio reúne mis laboratorios prácticos orientados al rol de **SOC Analyst L1 / Blue Team**. Documenta automatización con Bash, análisis de logs en Linux y captura e inspección de tráfico de red en laboratorio controlado.
 
-**Entorno:** Kali Linux en VirtualBox | **Lenguaje:** Bash
+**Entorno:** Kali Linux en VirtualBox | **Lenguaje:** Shell (Bash)
 
 ---
 
