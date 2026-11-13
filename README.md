@@ -1,4 +1,4 @@
-
+![](./banner_kali_linux.jpg)
 
 # Linux-SOC-Labs - Portafolio SOC L1 (Blue Team)
 
