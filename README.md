@@ -1,4 +1,4 @@
-![](./banner_kali_linux.jpg)
+![](./img/banner_kali_linux.jpg)
 
 # Linux-SOC-Labs - Portafolio SOC L1 (Blue Team)
 
@@ -23,7 +23,7 @@ Este repo es donde partí en SOC. Todo lo hice en **Kali Linux** en VirtualBox, 
   <img src="https://img.shields.io/badge/SOC_L1-Fundamentos-3b82f6" />
 </p>
 
-<img width="800" height="4" alt="linea azul" src="./linea-azul.jpg" />
+<img width="800" height="4" alt="linea azul" src="./img/linea-azul.jpg" />
 
 <a id="m1-2"></a>
 ## Módulo 1 y 2: Fundamentos de Terminal y Archivos [Completado]
@@ -59,7 +59,7 @@ cat auth.log  # Visualización de logs en terminal
 
 </details>
 
-<img width="800" height="4" alt="linea azul" src="./linea-azul.jpg" />
+<img width="800" height="4" alt="linea azul" src="./img/linea-azul.jpg" />
 
 <a id="m3"></a>
 ## Módulo 3: Monitoreo de SSH, Gestión de Servicios y Puertos [Completado]
@@ -81,7 +81,7 @@ chmod 600 ~/.ssh/id_rsa              # Permisos estrictos para llave privada
 
 ### Evidencia de Análisis
 <p align="center">
-  <img src="./log.ssh.jpeg" width="85%" alt="Evidencia journalctl SSH 3 intentos" />
+  <img src="./img/log.ssh.jpeg" width="85%" alt="Evidencia journalctl SSH 3 intentos" />
 </p>
 
 > **Validación:** Captura con `journalctl -u ssh -n 15` tras 3 intentos con `hacker_falso`. Se ven `Invalid user`, `pam_unix(sshd:auth): check pass; user unknown` y `authentication failure`. Detección de fuerza bruta confirmada.
@@ -91,7 +91,7 @@ chmod 600 ~/.ssh/id_rsa              # Permisos estrictos para llave privada
 
 </details>
 
-<img width="800" height="4" alt="linea azul" src="./linea-azul.jpg" />
+<img width="800" height="4" alt="linea azul" src="./img/linea-azul.jpg" />
 
 <a id="m4"></a>
 ## Módulo 4: Captura y Análisis de Tráfico de Red (`captura_red.sh`) [Completado]
@@ -120,7 +120,7 @@ sudo tcpdump -i eth0 -c 20 -w red_laboratorio.pcap   # Captura 20 paquetes
 
 ### Evidencia de Análisis
 <p align="center">
-  <img src="./captura_modulo4.jpeg" width="85%" alt="Evidencia Wireshark 20 paquetes" />
+  <img src="./img/captura_modulo4.jpeg" width="85%" alt="Evidencia Wireshark 20 paquetes" />
 </p>
 
 > **Validación:** 20 paquetes capturados con `tcpdump` y analizados en Wireshark.
@@ -130,7 +130,7 @@ sudo tcpdump -i eth0 -c 20 -w red_laboratorio.pcap   # Captura 20 paquetes
 
 </details>
 
-<img width="800" height="4" alt="linea azul" src="./linea-azul.jpg" />
+<img width="800" height="4" alt="linea azul" src="./img/linea-azul.jpg" />
 
 <a id="m5"></a>
 ## Módulo 5: SIEM (Splunk), Análisis de Logs y Triaje [Completado]
@@ -171,7 +171,7 @@ sudo pkill -u usuario                          # Terminar sesiones
 
 </details>
 
-<img width="800" height="4" alt="linea azul" src="./linea-azul.jpg" />
+<img width="800" height="4" alt="linea azul" src="./img/linea-azul.jpg" />
 
 <a id="m6"></a>
 ## Módulo 6: Inspección de Tráfico con tcpdump y Wireshark [Completado]
@@ -203,7 +203,7 @@ dns                                    # Consultas de nombres de dominio
 
 </details>
 
-<img width="800" height="4" alt="linea azul" src="./linea-azul.jpg" />
+<img width="800" height="4" alt="linea azul" src="./img/linea-azul.jpg" />
 
 <a id="m7"></a>
 ## Módulo 7: Análisis de Malware e IoCs [Completado]
@@ -244,7 +244,7 @@ sha256sum archivo.exe                           # Linux
 
 </details>
 
-<img width="800" height="4" alt="linea azul" src="./linea-azul.jpg" />
+<img width="800" height="4" alt="linea azul" src="./img/linea-azul.jpg" />
 
 <a id="m8"></a>
 ## Módulo 8: Análisis de Phishing e Investigación de Headers [Completado]
@@ -280,7 +280,7 @@ sha256sum archivo.exe                           # Linux
 
 </details>
 
-<img width="800" height="4" alt="linea azul" src="./linea-azul.jpg" />
+<img width="800" height="4" alt="linea azul" src="./img/linea-azul.jpg" />
 
 <a id="m9"></a>
 ## Módulo 9: Auditoría y Detección de Fuerza Bruta SSH [Completado]
@@ -306,7 +306,7 @@ Identificación de IP `192.168.1.105` con 3 intentos en intervalo corto, patrón
 
 ### Evidencia
 <p align="center">
-  <img src="./evidencia.jpeg" width="85%" alt="Evidencia analisis ataque log Top IPs" />
+  <img src="./img/evidencia.jpeg" width="85%" alt="Evidencia analisis ataque log Top IPs" />
 </p>
 
 > **Validación:** Top IPs atacantes: 192.168.1.105 (3) y 10.0.0.50 (1).
@@ -321,7 +321,7 @@ Identificación de IP `192.168.1.105` con 3 intentos en intervalo corto, patrón
 
 </details>
 
-<img width="800" height="4" alt="linea azul" src="./linea-azul.jpg" />
+<img width="800" height="4" alt="linea azul" src="./img/linea-azul.jpg" />
 
 <a id="m10"></a>
 ## Módulo 10: Automatización Defensiva, Triaje y Cierre de Fundamentos [Completado]
@@ -369,4 +369,4 @@ Base Linux/Redes documentada. Siguiente fase en suite especializada **Kali Purpl
 
 </details>
 
-<img width="800" height="4" alt="linea azul" src="./linea-azul.jpg" />
+<img width="800" height="4" alt="linea azul" src="./img/linea-azul.jpg" />
